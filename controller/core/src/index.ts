@@ -21,7 +21,9 @@ if (!process.env.MONGODB_URI || !process.env.DATABASE_NAME) {
     console.error("Please define the MONGODB_URI and DATABASE_NAME environment variable.");
     process.exit(1);
 }
-const dbUri = `${process.env.DATABASE_URI}/${process.env.DATABASE_NAME}`;
+
+const dbUri = `${process.env.MONGODB_URI}/${process.env.DATABASE_NAME}`;
+
 mongoose.connect(dbUri)
 .then(() => {
     console.log("Connected to MongoDB successfully");
