@@ -49,4 +49,4 @@ npm run dev
 
 ## Additional Notes:
 Check package.json for other scripts
-We don't have Docker yet, but we will make a Dockerfile with its config soon
+### We don't have Docker yet, but we will make a Dockerfile with its config soon
