@@ -1,11 +1,12 @@
-import FunctionModel from '../models/functions';
+import Function from '../models/functions';
+
 //NOTE: THE CODE BELOW IS AI GENERATED, I HAVEN'T READ OR TESTED ANY OF IT AND IT MAY NOT EVEN BE APPLYING THE CORRECT BUSINESS LOGIC, USE AT YOUR OWN DISCRETION
 //BUT I WOULD LIKE YOU TO USE MONGOOSE TO EASILY DO CRUD OPERATIONS
 class FunctionService {
     static async deployFunction(function_name: string, runtime: string, code: string) {
         try {
             // Create a new function document using the Mongoose model
-            const newFunction = new FunctionModel({ function_name, runtime, code });
+            const newFunction = new Function({ function_name, runtime, code });
             await newFunction.save(); // Save to the database
             return true; // Indicate success
         } catch (error) {
@@ -17,7 +18,7 @@ class FunctionService {
     static async getFunctionStatus(function_name: string) {
         try {
             // Retrieve function by name from the database
-            const functionData = await FunctionModel.findOne({ function_name });
+            const functionData = await Function.findOne({ function_name });
             if (!functionData) {
                 return "Function not found"; // Handle case where function does not exist
             }
@@ -31,7 +32,7 @@ class FunctionService {
     static async removeFunction(function_name: string) {
         try {
             // Remove function from the database
-            const result = await FunctionModel.deleteOne({ function_name });
+            const result = await Function.deleteOne({ function_name });
             return result.deletedCount > 0; // Return true if function was removed, false otherwise
         } catch (error) {
             console.error("Error removing function:", (error as Error).message);
@@ -42,7 +43,7 @@ class FunctionService {
     static async invokeFunction(function_name: string, args: any[]) {
         try {
             // Check if the function exists in the database
-            const functionData = await FunctionModel.findOne({ function_name });
+            const functionData = await Function.findOne({ function_name });
             if (!functionData) {
                 throw new Error("Function not found"); // Throw error if function does not exist
             }

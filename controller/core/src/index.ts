@@ -3,7 +3,6 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import router from "./routes/functions";
-import FunctionModel from './models/functions';
 
 dotenv.config();
 
@@ -18,14 +17,14 @@ const PORT = process.env.PORT || 3000;
 // Connect to MongoDB using Mongoose
 
 
-if (!process.env.MONGODB_URI || !process.env.DATABASE_NAME) {
-    console.error("Please define the MONGODB_URI and DATABASE_NAME environment variable.");
+if (!process.env.MONGO_USERNAME || !process.env.MONGO_PASSWORD || !process.env.MONGO_DATABASE) {
+    console.error("Please define the MONGO_USERNAME, MONGO_PASSWORD, and MONGO_DATABASE environment variable.");
     process.exit(1);
 }
 
-// Add FunctionModel in index.ts
+// Add Function in index.ts?
 
-const dbUri = `${process.env.MONGODB_URI}/${process.env.DATABASE_NAME}`;
+const dbUri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.gsref.mongodb.net/${process.env.MONGO_DATABASE}?retryWrites=true&w=majority`;
 
 mongoose.connect(dbUri)
 .then(() => {

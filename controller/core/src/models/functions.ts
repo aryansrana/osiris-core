@@ -32,6 +32,6 @@ const functionSchema: Schema<IFunction> = new Schema({
 });
 
 // Create the model
-const FunctionModel = mongoose.model<IFunction>('Function', functionSchema);
+const Function = mongoose.model<IFunction>('Function', functionSchema);
 
-export default FunctionModel;
+export default Function;
