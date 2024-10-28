@@ -17,10 +17,13 @@ const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB using Mongoose
 
+
 if (!process.env.MONGODB_URI || !process.env.DATABASE_NAME) {
     console.error("Please define the MONGODB_URI and DATABASE_NAME environment variable.");
     process.exit(1);
 }
+
+// Add FunctionModel in index.ts
 
 const dbUri = `${process.env.MONGODB_URI}/${process.env.DATABASE_NAME}`;
 
