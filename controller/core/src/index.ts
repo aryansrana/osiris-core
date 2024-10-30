@@ -15,7 +15,6 @@ const PORT = process.env.PORT || 3000;
 
 // Routes
 app.use('/api/functions', router);
-
 // Root route
 app.get('/api/functions', (request, response) => {
     response.send("API is running");
@@ -25,3 +24,5 @@ app.get('/api/functions', (request, response) => {
 app.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);
 });
+
+module.exports = app;
