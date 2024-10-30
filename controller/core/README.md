@@ -10,8 +10,6 @@ Ensure you have the following installed on your machine:
 
 - **Node.js** (v14 or later)
 - **npm** (comes with Node.js)
-- **Docker** (for containerized development, if applicable)
-- **MongoDB** (or access to a MongoDB instance)
 
 ---
 
@@ -26,12 +24,8 @@ npm install
 
 ## Step 2: Make core/.env and fill in the following environment variables
 ```env
-MONGO_USERNAME=yourMongoUsername
-MONGO_PASSWORD=yourMongoPassword
-MONGO_DATABASE=yourDatabaseName
 PORT=yourPortNumber
 ```
-Talk to Aryan asap for credentials, discord user is sucko
 
 ## Step 3: Transpile the Typescript Code into Javascript Code
 
