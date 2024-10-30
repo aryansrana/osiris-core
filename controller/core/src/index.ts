@@ -21,8 +21,10 @@ app.get('/api/functions', (request, response) => {
 });
 
 // Start the server
-app.listen(PORT, () => {
-    console.log(`Running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test'){
+    app.listen(PORT, () => {
+        console.log(`Running on port ${PORT}`);
+    });
+}
 
 module.exports = app;
