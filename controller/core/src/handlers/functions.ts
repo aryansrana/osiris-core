@@ -6,14 +6,14 @@ class FunctionHandler {
         try {
             const { function_name, runtime, code } = req.body;
             if (!function_name || !runtime || !code) {
-                res.status(400).json({ error: 'Missing required fields.' });
+                res.status(400).json({ result: false });
                 return;      
             }
             const result = await FunctionService.deployFunction(function_name, runtime, code);
-            res.status(result ? 200 : 400).json({ result });
+            res.status(result ? 201 : 400).json({ result });
             return;
         } catch (error) {
-            res.status(500).json({ error: (error as Error).message });
+            res.status(500).json({ result: false });
             return;
         }
     }
@@ -22,14 +22,14 @@ class FunctionHandler {
         try {
             const { function_name } = req.params; // Changed to params to match route
             if (!function_name) {
-                res.status(400).json({ error: 'Missing required fields.' });
+                res.status(400).json({ status: "error" });
                 return;
             }
             const status = await FunctionService.getFunctionStatus(function_name);
-            res.status(status === "error" ? 400 : 200).json({ status });
+            res.status(status === "error" ? 404 : 200).json({ status });
             return;
         } catch (error) {
-            res.status(500).json({ error: (error as Error).message });
+            res.status(500).json({ status: "error" });
             return;
         }
     }
@@ -38,7 +38,7 @@ class FunctionHandler {
         try {
             const { function_name } = req.params; // Changed to params to match route
             if (!function_name) {
-                res.status(400).json({ error: 'Missing required fields.' });
+                res.status(400).json({ result: false });
                 return;
             }
             const result = await FunctionService.removeFunction(function_name);
@@ -46,7 +46,7 @@ class FunctionHandler {
             res.status(result ? 200 : 400).json({ result });
             return;
         } catch (error) {
-            res.status(500).json({ error: (error as Error).message });
+            res.status(500).json({ result: false });
             return;
         }
     }
@@ -55,7 +55,7 @@ class FunctionHandler {
         try {
             const { function_name, args } = req.body;
             if (!function_name) {
-                res.status(400).json({ error: 'Missing required fields.' });
+                res.status(400).json({ result: null });
                 return;
             }
             // Note: if args is not an array or not provided, it will be set to []
@@ -65,7 +65,7 @@ class FunctionHandler {
             res.status(200).json({ result });
             return;
         } catch (error) {
-            res.status(500).json({ error: (error as Error).message });
+            res.status(500).json({ result: null });
             return;
         }
     }
