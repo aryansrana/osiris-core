@@ -54,6 +54,20 @@ class FunctionService {
             }
             const myFunction = functionRegistry[function_name];
             //Code for invoking function goes here
+            switch(myFunction.runtime){
+                case "Python 3.8":
+                    //do stuff
+                    break;
+                case "Javascript":
+                    //do stuff
+                    const argsString = args.map(arg => JSON.stringify(arg)).join(', ');
+                    const myCode = `${myFunction.code} ${myFunction.function_name}(${argsString});`
+                    const myResult = eval(myCode);
+                    return myResult;
+                default:
+                    //do stuff
+                    break;
+            }
         } catch (error) {
             console.error("Error invoking function:", (error as Error).message);
             return null;
