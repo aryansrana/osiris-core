@@ -13,6 +13,6 @@ router.get('/status/:function_name', FunctionHandler.status);
 router.delete('/remove/:function_name', FunctionHandler.remove);
 
 // /api/functions/invoke (Info will be sent in request.body)
-router.post('/invoke', FunctionHandler.invoke);
+router.get('/invoke', FunctionHandler.invoke);
 
 export default router;
