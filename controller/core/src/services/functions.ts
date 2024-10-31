@@ -53,17 +53,18 @@ class FunctionService {
                 return null;
             }
             const myFunction = functionRegistry[function_name];
+            const argsString = args.map(arg => JSON.stringify(arg)).join(', ');
             //Code for invoking function goes here
             switch(myFunction.runtime){
                 case "Python 3.8":
+                    const pyCode = `python3.8 -c "${myFunction.code} ${myFunction.function_name}(${argsString})"`;
+                    //const pyResult = exec()
                     //do stuff
                     break;
                 case "Javascript":
-                    //do stuff
-                    const argsString = args.map(arg => JSON.stringify(arg)).join(', ');
-                    const myCode = `${myFunction.code} ${myFunction.function_name}(${argsString});`
-                    const myResult = eval(myCode);
-                    return myResult;
+                    const jsCode = `${myFunction.code} ${myFunction.function_name}(${argsString});`
+                    const jsResult = eval(jsCode);
+                    return jsResult;
                 default:
                     //do stuff
                     break;
