@@ -7,8 +7,7 @@ class FunctionHandler {
             const { function_name, runtime, code } = req.body;
             if (!function_name || !runtime || !code) {
                 res.status(400).json({ error: 'Missing required fields.' });
-                return;
-                
+                return;      
             }
             const result = await FunctionService.deployFunction(function_name, runtime, code);
             res.status(result ? 200 : 400).json({ result });
