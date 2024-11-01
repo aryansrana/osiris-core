@@ -1,0 +1,8 @@
+dist/
+node_modules/
+tsconfig.tsbuildinfo
+.env
+team-1.md
+README.md
+.gitignore
+logs/
