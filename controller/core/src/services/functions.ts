@@ -62,10 +62,19 @@ class FunctionService {
             switch(myFunction.runtime){
                 case "Python 3.8":
                     try{
-                    const pyCode = `python3.8 -c "${myFunction.code} ${myFunction.function_name}(${argsString})"`;
-                    //const pyResult = exec()
-                    //do stuff
-                    return null;
+                        const { loadPyodide } = require("pyodide");
+                        const pyCode = `python3.8 -c "${myFunction.code} ${myFunction.function_name}(${argsString})"`;
+                        //const pyResult = exec()
+                        async function myFunc() {
+                            let pyodide = await loadPyodide();
+                            return pyodide.runPythonAsync(pyCode);
+                        }
+
+                        myFunc().then((result) => {
+                            return result;
+                        });
+                        //do stuff
+                        //return null;
                     }
                     catch(error){
                         return null;
