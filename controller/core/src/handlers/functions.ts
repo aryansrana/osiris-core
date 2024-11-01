@@ -62,7 +62,7 @@ class FunctionHandler {
             const argsArray = Array.isArray(args) ? args : [];
             const result = await FunctionService.invokeFunction(function_name, argsArray);
             //May need to redo output formatting
-            res.status(200).json({ result });
+            res.status(result === null ? 400 : 200).json({ result });
             return;
         } catch (error) {
             res.status(500).json({ result: null });

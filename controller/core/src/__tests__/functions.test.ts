@@ -137,7 +137,7 @@ describe("/api/functions", () => {
     describe("/invoke", () => {
         it('invoke addNumbers', async () =>{
             const response = await request(app)
-                .post('/api/functions/invoke')
+                .get('/api/functions/invoke/')
                 .send({
                     "function_name": "addNumbers",
                     "args": [3, 5]
@@ -148,7 +148,7 @@ describe("/api/functions", () => {
     
         it('invokeFunction subNumbers', async () =>{
             const response = await request(app)
-                .post('/api/functions/invoke')
+                .get('/api/functions/invoke/')
                 .send({
                     "function_name": "subNumbers",
                     "args": [5, 3]
@@ -159,7 +159,7 @@ describe("/api/functions", () => {
     
         it('invokeFunction multNumbers', async () =>{
             const response = await request(app)
-                .post('/api/functions/invoke')
+                .get('/api/functions/invoke/')
                 .send({
                     "function_name": "multNumbers",
                     "args": [3, 5]
@@ -170,7 +170,7 @@ describe("/api/functions", () => {
     
         it('invokeFunction concatStrings', async () =>{
             const response = await request(app)
-                .post('/api/functions/invoke')
+                .get('/api/functions/invoke/')
                 .send({
                     "function_name": "concatStrings",
                     "args": ["s", "t"]
@@ -181,7 +181,7 @@ describe("/api/functions", () => {
     
         it('invokeFunction sortString', async () =>{
             const response = await request(app)
-                .post('/api/functions/invoke')
+                .get('/api/functions/invoke/')
                 .send({
                     "function_name": "sortString",
                     "args": ["ba"]
@@ -191,12 +191,12 @@ describe("/api/functions", () => {
         })
         it('invokeFunction missingRequirements, should result in null', async () =>{
             const response = await request(app)
-                .post('/api/functions/invoke')
+                .get('/api/functions/invoke/')
                 .send({
-                    "function_name": "sortString",
+                    "function_name": "missingRequirements",
                     "args": ["ba"]
                 })
-                .expect(404);
+                .expect(400);
             expect(response.body.result).toBe(null)
         })
 
@@ -241,7 +241,7 @@ describe("/api/functions", () => {
                 .expect(200);
             expect(response.body.result).toBe(true);
         })
-        it('remove smissingRequirements, should result in false', async () =>{
+        it('remove missingRequirements, should result in false', async () =>{
             const function_name = "sortString"
             const response = await request(app)
                 .delete(`/api/functions/remove/${function_name}`)

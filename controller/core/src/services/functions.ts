@@ -1,5 +1,7 @@
 import { IFunction, functionRegistry } from '../models/functions';
 import { exec } from 'child_process';
+import { loadPyodide } from 'pyodide';
+
 //comment
 class FunctionService {
     static async deployFunction(function_name: string, runtime: string, code: string) {
@@ -62,24 +64,19 @@ class FunctionService {
             switch(myFunction.runtime){
                 case "Python 3.8":
                     try{
-                        const { loadPyodide } = require("pyodide");
-                        const pyCode = `python3.8 -c "${myFunction.code} ${myFunction.function_name}(${argsString})"`;
-                        //const pyResult = exec()
-                        async function myFunc() {
-                            let pyodide = await loadPyodide();
-                            return pyodide.runPythonAsync(pyCode);
-                        }
-
-                        myFunc().then((result) => {
-                            return result;
-                        });
-                        //do stuff
-                        //return null;
+                    const pyodideCode = myFunction.code.replace(/def\s+\w+\s*\(/, `def my_function(`);
+                    let pyodide = await loadPyodide();
+                    let pyFunction = pyodide.runPython(`
+                        ${pyodideCode}
+                        my_function
+                    `);
+                    const pyResult = pyFunction(...args);
+                    return pyResult;
                     }
                     catch(error){
+                        console.error(error as Error);
                         return null;
                     }
-                    break;
                 case "Javascript":
                     try{
                     const jsCode = `${myFunction.code} ${myFunction.function_name}(${argsString});`

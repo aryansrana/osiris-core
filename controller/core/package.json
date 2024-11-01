@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest ./dist/",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest ./dist/",
     "build": "npx tsc --build",
     "start": "node ./dist/index.js",
     "dev": "nodemon ./dist/index.js"
