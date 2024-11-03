@@ -83,7 +83,7 @@ with open('${resultFilePath}', 'w') as f:
 
             // Execute the Python script
             await new Promise((resolve, reject) => {
-                exec(`python ${functionFilePath}`, (error) => {
+                exec(`python3 ${functionFilePath}`, (error) => {
                     if (error) {
                         console.error(`Error executing Python script: ${error.message}`);
                         reject(error);

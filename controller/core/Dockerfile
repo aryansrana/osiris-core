@@ -1,5 +1,5 @@
 # Use an official Node.js image as the base image
-FROM node:14
+FROM node:20
 
 # Install Python 3 and other dependencies
 RUN apt-get update && apt-get install -y \
