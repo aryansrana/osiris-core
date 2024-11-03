@@ -1,14 +1,20 @@
 import { IFunction, functionRegistry } from '../models/functions';
 import { exec } from 'child_process';
-import { loadPyodide } from 'pyodide';
+import path from 'path';
+import fs from 'fs';
+import { v4 as uuidv4 } from 'uuid';
 
-//comment
+// Ensure the temp directory exists
+const tempDir = path.join(__dirname, '../../temp');
+if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+}
+
 class FunctionService {
     static async deployFunction(function_name: string, runtime: string, code: string) {
         try {
-            if(functionRegistry.hasOwnProperty(function_name)){
-                //console.error("Function already exists in functionRegistry");
-                return false;
+            if (functionRegistry.hasOwnProperty(function_name)) {
+                return false; // Function already exists
             }
             const newFunction: IFunction = {
                 function_name,
@@ -16,83 +22,88 @@ class FunctionService {
                 code,
                 status: 'deployed',
             } as IFunction;
-            
+
             functionRegistry[function_name] = newFunction;
             return true;
         } catch (error) {
-            //console.error("Error deploying function:", (error as Error).message);
-            return false;
+            return false; // Error deploying function
         }
     }
 
     static async getFunctionStatus(function_name: string) {
         try {
-            if(!functionRegistry.hasOwnProperty(function_name)){
-                //console.error("Function doesn't exist in functionRegistry");
-                return "error";
+            if (!functionRegistry.hasOwnProperty(function_name)) {
+                return "error"; // Function doesn't exist
             }
             return functionRegistry[function_name].status;
         } catch (error) {
-            //console.error("Error fetching function status:", (error as Error).message);
-            return "error";
+            return "error"; // Error fetching function status
         }
     }
 
     static async removeFunction(function_name: string) {
         try {
-            if(!functionRegistry.hasOwnProperty(function_name)){
-                //console.error("Function doesn't exist in functionRegistry");
-                return false;
+            if (!functionRegistry.hasOwnProperty(function_name)) {
+                return false; // Function doesn't exist
             }
             delete functionRegistry[function_name];
             return true;
         } catch (error) {
-            //console.error("Error removing function:", (error as Error).message);
-            return false;
+            return false; // Error removing function
         }
     }
 
     static async invokeFunction(function_name: string, args: any[]): Promise<any> {
         try {
-            if(!functionRegistry.hasOwnProperty(function_name)){
-                //console.error("Function doesn't exist in functionRegistry");
-                return null;
+            if (!functionRegistry.hasOwnProperty(function_name)) {
+                return null; // Function doesn't exist
             }
             const myFunction = functionRegistry[function_name];
             const argsString = args.map(arg => JSON.stringify(arg)).join(', ');
-            //Code for invoking function goes here
-            switch(myFunction.runtime){
-                case "Python 3.8":
-                    try{
-                    const pyodideCode = myFunction.code.replace(/def\s+\w+\s*\(/, `def my_function(`);
-                    let pyodide = await loadPyodide();
-                    let pyFunction = pyodide.runPython(`
-                        ${pyodideCode}
-                        my_function
-                    `);
-                    const pyResult = pyFunction(...args);
-                    return pyResult;
+
+            // Generate unique filename components
+            const timestamp = new Date().toISOString().replace(/[-:.]/g, ''); // Format timestamp
+            const uniqueId = uuidv4();
+            const uniqueFileName = `${function_name}_${timestamp}_${uniqueId}`;
+
+            // Define file paths in core/temp directory
+            const functionFilePath = path.join(tempDir, `${uniqueFileName}.py`);
+            const resultFilePath = path.join(tempDir, `${uniqueFileName}.json`);
+
+            // Write the Python function to a file
+            const pyCode = `
+import json
+${myFunction.code}
+result = ${myFunction.function_name}(${argsString})
+with open('${resultFilePath}', 'w') as f:
+    json.dump({'result': result}, f)
+`;
+
+            fs.writeFileSync(functionFilePath, pyCode);
+
+            // Execute the Python script
+            await new Promise((resolve, reject) => {
+                exec(`python ${functionFilePath}`, (error) => {
+                    if (error) {
+                        console.error(`Error executing Python script: ${error.message}`);
+                        reject(error);
                     }
-                    catch(error){
-                        console.error(error as Error);
-                        return null;
-                    }
-                case "Javascript":
-                    try{
-                    const jsCode = `${myFunction.code} ${myFunction.function_name}(${argsString});`
-                    const jsResult = eval(jsCode);
-                    return jsResult;
-                    }
-                    catch(error){
-                        return null;
-                    }
-                default:
-                    return null;
-                    //do stuff
-                    break;
-            }
+                    resolve(true);
+                });
+            });
+
+            // Read the result from the JSON file
+            const jsonData = fs.readFileSync(resultFilePath, 'utf-8');
+            const result = JSON.parse(jsonData).result;
+
+            // Clean up the temporary files
+            fs.unlinkSync(functionFilePath);
+            fs.unlinkSync(resultFilePath);
+
+            return result;
+
         } catch (error) {
-            //console.error("Error invoking function:", (error as Error).message);
+            console.error("Error invoking function:", (error as Error).message);
             return null;
         }
     }

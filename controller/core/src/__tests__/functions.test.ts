@@ -15,7 +15,7 @@ describe("/api/functions", () => {
                 .send({
                     "function_name": "addNumbers",
                     "runtime": "Python 3.8",
-                    "code": "def add_numbers(a, b): return a + b"
+                    "code": "def addNumbers(a, b): return a + b"
                   })
                 .expect(201);
     
@@ -28,7 +28,7 @@ describe("/api/functions", () => {
                 .send({
                     "function_name": "subNumbers",
                     "runtime": "Python 3.8",
-                    "code": "def sub_numbers(a, b): return a - b"
+                    "code": "def subNumbers(a, b): return a - b"
                   })
                 .expect(201);
     
@@ -41,7 +41,7 @@ describe("/api/functions", () => {
                 .send({
                     "function_name": "multNumbers",
                     "runtime": "Python 3.8",
-                    "code": "def mult_numbers(a, b): return a * b"
+                    "code": "def multNumbers(a, b): return a * b"
                   })
                 .expect(201);
     
@@ -54,7 +54,7 @@ describe("/api/functions", () => {
                 .send({
                     "function_name": "concatStrings",
                     "runtime": "Python 3.8",
-                    "code": "def concat(a, b): return a + b"
+                    "code": "def concatStrings(a, b): return a + b"
                   })
                 .expect(201);
     
@@ -67,7 +67,7 @@ describe("/api/functions", () => {
                 .send({
                     "function_name": "sortString",
                     "runtime": "Python 3.8",
-                    "code": "def sort(a): return ''.join(sorted(a))"
+                    "code": "def sortString(a): return ''.join(sorted(a))"
                   })
                 .expect(201);
     
@@ -77,9 +77,9 @@ describe("/api/functions", () => {
             const response = await request(app)
                 .post('/api/functions/deploy')
                 .send({
-                    "functionname": "wrote functionname instead of function_name",
+                    "functionname": "hi",
                     "runtime": "Python 3.8",
-                    "code": "def sort(a): return ''.join(sorted(a))"
+                    "code": "def hi(a): return ''.join(sorted(a))"
                   })
                 .expect(400);
     
