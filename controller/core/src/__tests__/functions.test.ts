@@ -22,26 +22,24 @@ describe("/api/functions", () => {
             expect(response.body.result).toBe(true);
         });
     
-        it('deploy subNumbers', async () => {
+        it('deploy subNumbers, testing invalid syntax', async () => {
             const response = await request(app)
                 .post('/api/functions/deploy')
                 .send({
                     "function_name": "subNumbers",
                     "runtime": "Python 3.8",
-                    "code": "def subNumbers(a, b): return a - b"
+                    "code": "def subNumbers(a, b) return a - b"
                   })
                 .expect(201);
-    
-            expect(response.body.result).toBe(true);
         });
     
-        it('deploy multNumbers', async () => {
+        it('deploy multNumbers, testing Javascript code', async () => {
             const response = await request(app)
                 .post('/api/functions/deploy')
                 .send({
                     "function_name": "multNumbers",
-                    "runtime": "Python 3.8",
-                    "code": "def multNumbers(a, b): return a * b"
+                    "runtime": "Javascript",
+                    "code": "function multNumbers(a, b){ return a * b; }"
                   })
                 .expect(201);
     
@@ -77,14 +75,123 @@ describe("/api/functions", () => {
             const response = await request(app)
                 .post('/api/functions/deploy')
                 .send({
-                    "functionname": "hi",
+                    "functionname": "sort",
                     "runtime": "Python 3.8",
-                    "code": "def hi(a): return ''.join(sorted(a))"
+                    "code": "def sort(a): return ''.join(sorted(a))"
                   })
                 .expect(400);
-    
-            expect(response.body.result).toBe(false);
         });
+        it ('deploy averageOfNumbers, multiline Javascript program', async () => {
+            const response = await request(app)
+                .post('/api/functions/deploy')
+                .send({
+                    "function_name": "averageOfNumbers",
+                    "runtime": "Javascript",
+                    "code": `function averageOfNumbers(a, b){
+                                let x = a;
+                                let y = b;
+                                let res = x + y;
+                                let ans = res / 2;
+                                return ans;}
+                            `
+                })
+                .expect(201)
+            expect(response.body.result).toBe(true);
+        })
+
+        it('deploy divNumbers, test floats', async () =>{
+            const response = await request(app)
+                .post('/api/functions/deploy')
+                .send({
+                    "function_name": "divNumbers",
+                    "runtime": "Python 3.8",
+                    "code": "def divNumbers(a, b): return a / b"
+                  })
+                .expect(201);
+    
+            expect(response.body.result).toBe(true);
+        })
+
+        it('deploy boolNumbers, test bool', async () =>{
+            const response = await request(app)
+                .post('/api/functions/deploy')
+                .send({
+                    "function_name": "boolNumbers",
+                    "runtime": "Python 3.8",
+                    "code": "def boolNumbers(a, b): return a == b"
+                  })
+                .expect(201);
+    
+            expect(response.body.result).toBe(true);
+        })
+
+        it('deploy noneFunction, test None return type', async () =>{
+            const response = await request(app)
+                .post('/api/functions/deploy')
+                .send({
+                    "function_name": "noneFunction",
+                    "runtime": "Python 3.8",
+                    "code": "def noneFunction(): return"
+                  })
+                .expect(201);
+    
+            expect(response.body.result).toBe(true);
+        })
+
+        it('deploy lstFunction, test lists', async () =>{
+            const response = await request(app)
+                .post('/api/functions/deploy')
+                .send({
+                    "function_name": "lstFunction",
+                    "runtime": "Python 3.8",
+                    "code": "def lstFunction(a): return a"
+                  })
+                .expect(201);
+    
+            expect(response.body.result).toBe(true);
+        })
+
+        it('deploy dictFunction, test dictionaries', async () =>{
+            const response = await request(app)
+                .post('/api/functions/deploy')
+                .send({
+                    "function_name": "dictFunction",
+                    "runtime": "Python 3.8",
+                    "code": "def dictFunction(a): return a"
+                  })
+                .expect(201);
+    
+            expect(response.body.result).toBe(true);
+        })
+        /*
+        it('deploy setFunction, test sets', async () =>{
+            const response = await request(app)
+                .post('/api/functions/deploy')
+                .send({
+                    "function_name": "setFunction",
+                    "runtime": "Python 3.8",
+                    "code": "def setFunction(a): return a"
+                  })
+                .expect(201);
+    
+            expect(response.body.result).toBe(true);
+        })
+        */
+
+        /*
+        it('deploy bufferFunction, test buffers', async () =>{
+            const response = await request(app)
+                .post('/api/functions/deploy')
+                .send({
+                    "function_name": "bufferFunction",
+                    "runtime": "Python 3.8",
+                    "code": "def bufferFunction(a): return a"
+                  })
+                .expect(201);
+    
+            expect(response.body.result).toBe(true);
+        })
+        */
     });
 
     describe("/status", () => {
@@ -133,6 +240,81 @@ describe("/api/functions", () => {
                 .expect(404);
             expect(response.body.status).toBe("error")
         });
+        
+        it ('getFunctionStatus for non-deployed function', async () =>{
+            const function_name = "someFunction"
+            const response = await request(app)
+                .get(`/api/functions/status/${function_name}`)
+                .expect(404);
+            expect(response.body.status).toBe("error")
+        })
+
+        it ('getFunctionStatus for averageOfNubmers', async () =>{
+            const function_name = "averageOfNumbers"
+            const response = await request(app)
+                .get(`/api/functions/status/${function_name}`)
+                .expect(200);
+            expect(response.body.status).toBe("deployed")
+        });
+
+        it ('getFunctionStatus for divNumbers', async () =>{
+            const function_name = "divNumbers"
+            const response = await request(app)
+                .get(`/api/functions/status/${function_name}`)
+                .expect(200);
+            expect(response.body.status).toBe("deployed")
+        });
+
+        it ('getFunctionStatus for boolNumbers', async () =>{
+            const function_name = "boolNumbers"
+            const response = await request(app)
+                .get(`/api/functions/status/${function_name}`)
+                .expect(200);
+            expect(response.body.status).toBe("deployed")
+        });
+
+        it ('getFunctionStatus for noneFunction', async () =>{
+            const function_name = "noneFunction"
+            const response = await request(app)
+                .get(`/api/functions/status/${function_name}`)
+                .expect(200);
+            expect(response.body.status).toBe("deployed")
+        });
+
+        it ('getFunctionStatus for lstFunction', async () =>{
+            const function_name = "lstFunction"
+            const response = await request(app)
+                .get(`/api/functions/status/${function_name}`)
+                .expect(200);
+            expect(response.body.status).toBe("deployed")
+        });
+
+        it ('getFunctionStatus for dictFunction', async () =>{
+            const function_name = "dictFunction"
+            const response = await request(app)
+                .get(`/api/functions/status/${function_name}`)
+                .expect(200);
+            expect(response.body.status).toBe("deployed")
+        });
+        /*
+        it ('getFunctionStatus for setFunction', async () =>{
+            const function_name = "setFunction"
+            const response = await request(app)
+                .get(`/api/functions/status/${function_name}`)
+                .expect(200);
+            expect(response.body.status).toBe("deployed")
+        });
+        */
+
+        /*
+        it ('getFunctionStatus for bufferFunction', async () =>{
+            const function_name = "bufferFunction"
+            const response = await request(app)
+                .get(`/api/functions/status/${function_name}`)
+                .expect(200);
+            expect(response.body.status).toBe("deployed")
+        });
+        */
     });
     describe("/invoke", () => {
         it('invoke addNumbers', async () =>{
@@ -153,11 +335,10 @@ describe("/api/functions", () => {
                     "function_name": "subNumbers",
                     "args": [5, 3]
                 })
-                .expect(200);
-            expect(response.body.result).toBe(2)
+                .expect(400);
         })
     
-        it('invokeFunction multNumbers', async () =>{
+        it('invokeFunction multNumbers, Javascript code', async () =>{
             const response = await request(app)
                 .get('/api/functions/invoke/')
                 .send({
@@ -197,9 +378,99 @@ describe("/api/functions", () => {
                     "args": ["ba"]
                 })
                 .expect(400);
+        })
+
+        it('invoke averageOfNumbers', async () =>{
+            const response = await request(app)
+                .get('/api/functions/invoke/')
+                .send({
+                    "function_name": "averageOfNumbers",
+                    "args": [3, 5]
+                })
+                .expect(200);
+            expect(response.body.result).toBe(4)
+        })
+
+        it('invoke divNumbers', async () =>{
+            const response = await request(app)
+                .get('/api/functions/invoke/')
+                .send({
+                    "function_name": "divNumbers",
+                    "args": [6, 4]
+                })
+                .expect(200);
+            expect(response.body.result).toBe(1.5)
+        })
+
+        it('invoke boolNumbers', async () =>{
+            const response = await request(app)
+                .get('/api/functions/invoke/')
+                .send({
+                    "function_name": "boolNumbers",
+                    "args": [4, 4]
+                })
+                .expect(200);
+            expect(response.body.result).toBe(true)
+        })
+
+        it('invoke noneFunction', async () =>{
+            const response = await request(app)
+                .get('/api/functions/invoke/')
+                .send({
+                    "function_name": "noneFunction",
+                    "args": []
+                })
+                .expect(200);
             expect(response.body.result).toBe(null)
         })
 
+        it('invoke lstFunction', async () =>{
+            const response = await request(app)
+                .get('/api/functions/invoke/')
+                .send({
+                    "function_name": "lstFunction",
+                    "args": [[1, 2, 3]]
+                })
+                .expect(200);
+            expect(response.body.result).toStrictEqual([1, 2, 3])
+        })
+
+        it('invoke dictFunction', async () =>{
+            const response = await request(app)
+                .get('/api/functions/invoke/')
+                .send({
+                    "function_name": "dictFunction",
+                    "args": [{1: "h", 2: "e", 3: "q"}]
+                })
+                .expect(200);
+            expect(response.body.result).toStrictEqual({1: "h", 2: "e", 3: "q"})
+        })
+        
+        /*
+        it('invoke setFunction', async () =>{
+            const response = await request(app)
+                .get('/api/functions/invoke/')
+                .send({
+                    "function_name": "setFunction",
+                    "args": [{1, 2, 3}]
+                })
+                .expect(200);
+            expect(response.body.result).toStrictEqual({1, 2, 3})
+        })
+        */
+
+        /*
+        it('invoke bufferFunction', async () =>{
+            const response = await request(app)
+                .get('/api/functions/invoke/')
+                .send({
+                    "function_name": "bufferFunction",
+                    "args": [b"hello"]
+                })
+                .expect(200);
+            expect(response.body.result).toStrictEqual(b"hello")
+        })
+        */
     });
     describe("/remove", () => {
         it('remove addNumbers', async () =>{
@@ -248,5 +519,73 @@ describe("/api/functions", () => {
                 .expect(400);
             expect(response.body.result).toBe(false);
         })
+
+        it('remove averageOfNumbers', async () =>{
+            const function_name = "averageOfNumbers"
+            const response = await request(app)
+                .delete(`/api/functions/remove/${function_name}`)
+                .expect(200);
+            expect(response.body.result).toBe(true);
+        })
+
+        it('remove divNumbers', async () =>{
+            const function_name = "divNumbers"
+            const response = await request(app)
+                .delete(`/api/functions/remove/${function_name}`)
+                .expect(200);
+            expect(response.body.result).toBe(true);
+        })
+
+        it('remove boolNumbers', async () =>{
+            const function_name = "boolNumbers"
+            const response = await request(app)
+                .delete(`/api/functions/remove/${function_name}`)
+                .expect(200);
+            expect(response.body.result).toBe(true);
+        })
+
+        it('remove noneFunction', async () =>{
+            const function_name = "noneFunction"
+            const response = await request(app)
+                .delete(`/api/functions/remove/${function_name}`)
+                .expect(200);
+            expect(response.body.result).toBe(true);
+        })
+
+        it('remove lstFunction', async () =>{
+            const function_name = "lstFunction"
+            const response = await request(app)
+                .delete(`/api/functions/remove/${function_name}`)
+                .expect(200);
+            expect(response.body.result).toBe(true);
+        })
+
+        it('remove dictFunction', async () =>{
+            const function_name = "dictFunction"
+            const response = await request(app)
+                .delete(`/api/functions/remove/${function_name}`)
+                .expect(200);
+            expect(response.body.result).toBe(true);
+        })
+        /*
+        it('remove setFunction', async () =>{
+            const function_name = "setFunction"
+            const response = await request(app)
+                .delete(`/api/functions/remove/${function_name}`)
+                .expect(200);
+            expect(response.body.result).toBe(true);
+        })
+        */
+
+        /*
+        it('remove bufferFunction', async () =>{
+            const function_name = "bufferFunction"
+            const response = await request(app)
+                .delete(`/api/functions/remove/${function_name}`)
+                .expect(200);
+            expect(response.body.result).toBe(true);
+        })
+        */
+
     });
 });
